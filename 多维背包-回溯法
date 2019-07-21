@@ -1,0 +1,91 @@
+#include<stdio.h>
+int n;//物品个数
+double bestp;//最优价值
+int x[10000],bestx[10000],c[10000],w[10000][10000];//x[i]暂存物品的选中情况,最优装载，约束限制背包容量，约束条件
+double p[10000];//物品价值
+
+void Backtrack(int i,double cp,int cw[])
+{ //cw当前包内物品重量，cp当前包内物品价值，cv当前物品体积
+    int j,k;
+    if(i>n)//回溯结束
+    {
+        if(cp>bestp)//如果当前价值＞最优价值
+        {
+            bestp=cp;//最优价值=当前价值
+            for(i=0;i<=n;i++) bestx[i]=x[i];//第i个最优装载是否装入
+        }
+    }
+    else 
+        for(j=0;j<=1;j++)  
+        {
+            x[i]=j;//x[i]=1或x[i]=0
+                if(cw[1]+x[i]*w[1][i]<=c[1]&&
+				   cw[2]+x[i]*w[2][i]<=c[2]&&
+				   cw[3]+x[i]*w[3][i]<=c[3]&&
+				   cw[4]+x[i]*w[4][i]<=c[4]&&
+				   cw[5]+x[i]*w[5][i]<=c[5]&&
+				   cw[6]+x[i]*w[6][i]<=c[6]&&
+				   cw[7]+x[i]*w[7][i]<=c[7]&&
+				   cw[8]+x[i]*w[8][i]<=c[8]&&
+				   cw[9]+x[i]*w[9][i]<=c[10]&&
+				   cw[10]+x[i]*w[10][i]<=c[10])  //如果当前包内总重＋第i个物品重量约束<=背包容量
+                {
+					for(k=1;k<=10;k++)
+                    cw[k]+=w[k][i]*x[i];//当前总重=当前总重＋第i个物品重量
+
+
+                    cp+=p[i]*x[i];//当前总价=当前总价＋第i个物品价值
+
+                    Backtrack(i+1,cp,cw);
+
+					for(k=1;k<=10;k++)
+					cw[k]-=w[k][i]*x[i];
+                
+
+                    cp-=p[i]*x[i];//当前总价=当前总价-第i个物品价值 
+					
+            }
+        }
+}
+
+int main()
+{
+    int i;
+   int cw[100];
+    for(i=1;i<=10;i++)
+       cw[i]=0;
+    bestp=0.0; 
+
+    printf("物品个数是:\n");
+    scanf("%d",&n);    
+
+	printf("物品的价值是:\n");
+    for(i=1;i<=n;i++) 
+        scanf("%lf",&p[i]);   
+
+	printf("约束限制是:\n");
+    for(i=1;i<=10;i++) 
+        scanf("%d",&c[i]);
+
+   FILE *fr;
+    fr = fopen("1.txt", "r");//打开文件名
+
+    while(!feof(fr))
+    {
+        printf("约束条件自动输入成功.\n");
+        for(int j=1; j<=10; j++)
+            for(i=1; i<=n; i++)
+                fscanf(fr, "%d", &w[j][i]);
+    }
+
+    Backtrack(1,0.0,cw);//当递归函数达到条件i=1时外层调用结束执行下一步
+
+    printf("最优价值为:\n");
+    printf("%lf\n",bestp);
+
+    printf("被选中的物品是(0未选中，1选中)\n");
+    for(i=1;i<=n;i++) 
+        printf("%d",bestx[i]);//输出最优价值
+    printf("\n");
+    return 0;
+}
